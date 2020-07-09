@@ -42,4 +42,5 @@ public interface CustomerService {
 
     void deleteCustomersByTenantId(TenantId tenantId);
 
+    Customer getAppCustomer();
 }

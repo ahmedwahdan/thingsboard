@@ -39,8 +39,10 @@ import org.thingsboard.server.dao.service.DataValidator;
 import org.thingsboard.server.dao.service.PaginatedRemover;
 import org.thingsboard.server.dao.service.Validator;
 import org.thingsboard.server.dao.tenant.TenantDao;
+import org.thingsboard.server.dao.tenant.TenantService;
 import org.thingsboard.server.dao.user.UserService;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +56,8 @@ public class CustomerServiceImpl extends AbstractEntityService implements Custom
     private static final String PUBLIC_CUSTOMER_TITLE = "Public";
     public static final String INCORRECT_CUSTOMER_ID = "Incorrect customerId ";
     public static final String INCORRECT_TENANT_ID = "Incorrect tenantId ";
+
+    private static Customer appCustomer;
 
     @Autowired
     private CustomerDao customerDao;
@@ -75,6 +79,14 @@ public class CustomerServiceImpl extends AbstractEntityService implements Custom
 
     @Autowired
     private DashboardService dashboardService;
+
+    @Autowired
+    private TenantService tenantService;
+
+    @PostConstruct
+    private void loadAppCustomerOnStartup(){
+        getAppCustomer();
+    };
 
     @Override
     public Customer findCustomerById(TenantId tenantId, CustomerId customerId) {
@@ -156,6 +168,22 @@ public class CustomerServiceImpl extends AbstractEntityService implements Custom
         log.trace("Executing deleteCustomersByTenantId, tenantId [{}]", tenantId);
         Validator.validateId(tenantId, "Incorrect tenantId " + tenantId);
         customersByTenantRemover.removeEntities(tenantId, tenantId);
+    }
+
+    @Override
+    public Customer getAppCustomer() {
+        if(appCustomer != null)
+            return appCustomer;
+        List<Customer> customerList = customerDao.find(null);
+        if(customerList.isEmpty()){
+            Customer customer = new Customer();
+            customer.setTitle("TAMAM_Customer");
+            customer.setTenantId(tenantService.getAppTenant().getTenantId());
+            appCustomer = saveCustomer(customer);
+        }else{
+            appCustomer = customerList.get(0);
+        }
+        return appCustomer;
     }
 
     private DataValidator<Customer> customerValidator =

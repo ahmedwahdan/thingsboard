@@ -40,7 +40,9 @@ import org.thingsboard.server.dao.service.Validator;
 import org.thingsboard.server.dao.user.UserService;
 import org.thingsboard.server.dao.widget.WidgetsBundleService;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.UUID;
 
 import static org.thingsboard.server.dao.service.Validator.validateId;
 
@@ -50,6 +52,7 @@ public class TenantServiceImpl extends AbstractEntityService implements TenantSe
 
     private static final String DEFAULT_TENANT_REGION = "Global";
     public static final String INCORRECT_TENANT_ID = "Incorrect tenantId ";
+    private static Tenant appTenant;
 
     @Autowired
     private TenantDao tenantDao;
@@ -77,6 +80,11 @@ public class TenantServiceImpl extends AbstractEntityService implements TenantSe
 
     @Autowired
     private RuleChainService ruleChainService;
+
+    @PostConstruct
+    private void loadAppTenantOnStartup(){
+        getAppTenant();
+    }
 
     @Override
     public Tenant findTenantById(TenantId tenantId) {
@@ -114,6 +122,21 @@ public class TenantServiceImpl extends AbstractEntityService implements TenantSe
         ruleChainService.deleteRuleChainsByTenantId(tenantId);
         tenantDao.removeById(tenantId, tenantId.getId());
         deleteEntityRelations(tenantId, tenantId);
+    }
+
+    @Override
+    public Tenant getAppTenant() {
+        if(appTenant != null)
+            return appTenant;
+        List<Tenant> tenantList = tenantDao.find(null);
+        if(tenantList.isEmpty()){
+             Tenant tenant = new Tenant();
+            tenant.setTitle("TAMAM_TENANT");
+            appTenant = saveTenant(tenant);
+        }else{
+            appTenant = tenantList.get(0);
+        }
+        return appTenant;
     }
 
     @Override

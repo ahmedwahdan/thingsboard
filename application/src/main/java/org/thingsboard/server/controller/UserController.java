@@ -1,12 +1,12 @@
 /**
  * Copyright © 2016-2020 The Thingsboard Authors
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.thingsboard.rule.engine.api.MailService;
+import org.thingsboard.server.common.data.Customer;
 import org.thingsboard.server.common.data.EntityType;
+import org.thingsboard.server.common.data.Tenant;
 import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.audit.ActionType;
 import org.thingsboard.server.common.data.exception.ThingsboardErrorCode;
@@ -44,6 +46,8 @@ import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;
 import org.thingsboard.server.common.data.security.UserCredentials;
+import org.thingsboard.server.dao.LocaleConfig;
+import org.thingsboard.server.dto.UserDto;
 import org.thingsboard.server.queue.util.TbCoreComponent;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
 import org.thingsboard.server.service.security.model.SecurityUser;
@@ -55,6 +59,7 @@ import org.thingsboard.server.service.security.permission.Resource;
 import org.thingsboard.server.utils.MiscUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 @RestController
 @TbCoreComponent
@@ -77,6 +82,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    LocaleConfig localeConfig;
 
 
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'TENANT_ADMIN', 'CUSTOMER_USER')")
@@ -125,6 +133,52 @@ public class UserController extends BaseController {
         } catch (Exception e) {
             throw handleException(e);
         }
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public ObjectNode register(@RequestBody UserDto userDto, Locale locale, HttpServletRequest request) throws ThingsboardException {
+
+        localeConfig.setLocale(locale);
+
+        Tenant appTenant = tenantService.getAppTenant();
+        Customer appCustomer = customerService.getAppCustomer();
+
+        User user = userDto.mapToUser();
+
+        user.setAuthority(Authority.CUSTOMER_USER);
+
+        user.setTenantId(appTenant.getTenantId());
+        user.setCustomerId(appCustomer.getId());
+
+        try {
+
+            User savedUser = checkNotNull(userService.saveUser(user));
+            UserCredentials userCredentials = userService.findUserCredentialsByUserId(appTenant.getTenantId(), savedUser.getId());
+            userCredentials.setPassword(userDto.getPassword());
+            userService.saveUserCredentials(appTenant.getTenantId(), userCredentials);
+            String baseUrl = MiscUtils.constructBaseUrl(request);
+            String activateUrl = String.format(ACTIVATE_URL_PATTERN, baseUrl,
+                    userCredentials.getActivateToken());
+            String email = savedUser.getEmail();
+            try {
+                mailService.sendActivationEmail(activateUrl, email);
+            } catch (ThingsboardException e) {
+                userService.deleteUser(appTenant.getTenantId(), savedUser.getId());
+                throw e;
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode tokenObject = objectMapper.createObjectNode();
+
+            tokenObject.put("userId", savedUser.getId()
+                                               .toString());
+            return tokenObject;
+
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+
+
     }
 
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'TENANT_ADMIN', 'CUSTOMER_USER')")

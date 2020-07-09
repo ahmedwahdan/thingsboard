@@ -24,6 +24,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.thingsboard.server.common.data.Customer;
 import org.thingsboard.server.common.data.Tenant;
@@ -36,6 +37,7 @@ import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;
 import org.thingsboard.server.common.data.security.UserCredentials;
+import org.thingsboard.server.dao.LocaleConfig;
 import org.thingsboard.server.dao.customer.CustomerDao;
 import org.thingsboard.server.dao.entity.AbstractEntityService;
 import org.thingsboard.server.dao.exception.DataValidationException;
@@ -47,6 +49,7 @@ import org.thingsboard.server.dao.tenant.TenantDao;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.thingsboard.server.dao.service.Validator.validateId;
@@ -70,6 +73,9 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    LocaleConfig localeConfig;
+
     @Value("${security.user_login_case_sensitive:true}")
     private boolean userLoginCaseSensitive;
 
@@ -84,6 +90,9 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
     @Autowired
     private CustomerDao customerDao;
+
+    @Autowired
+    private MessageSource messages;
 
     @Override
     public User findUserByEmail(TenantId tenantId, String email) {
@@ -406,8 +415,10 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
                     User existentUserWithEmail = findUserByEmail(tenantId, user.getEmail());
                     if (existentUserWithEmail != null && !isSameData(existentUserWithEmail, user)) {
-                        throw new DataValidationException("User with email '" + user.getEmail() + "' "
-                                + " already present in database!");
+                        String error = messages.getMessage("validation.user.duplicate-user", null, localeConfig.getLocale());
+                        throw new DataValidationException(error);
+//                        throw new DataValidationException("User with email '" + user.getEmail() + "' "
+//                                + " already present in database!");
                     }
                     if (!tenantId.getId().equals(ModelConstants.NULL_UUID)) {
                         Tenant tenant = tenantDao.findById(tenantId, user.getTenantId().getId());

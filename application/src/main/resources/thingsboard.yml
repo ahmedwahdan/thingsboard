@@ -164,6 +164,16 @@ security:
             username: "${SECURITY_OAUTH2_DEFAULT_MAPPER_CUSTOM_USERNAME:}"
             password: "${SECURITY_OAUTH2_DEFAULT_MAPPER_CUSTOM_PASSWORD:}"
 
+
+# Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
+spring.http.encoding.charset: UTF-8
+# Enable http encoding support.
+spring.http.encoding.enabled: true
+# Force the encoding to the configured charset on HTTP requests and responses.
+spring.http.encoding.force: true
+spring.messages.encoding: UTF-8
+spring.messages.fallback-to-system-locale: true
+
 # Dashboard parameters
 dashboard:
   # Maximum allowed datapoints fetched by widgets
