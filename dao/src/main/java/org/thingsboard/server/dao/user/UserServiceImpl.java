@@ -450,6 +450,9 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                     if (userCredentials.getUserId() == null) {
                         throw new DataValidationException("User credentials should be assigned to user!");
                     }
+                    if (userCredentials.getPassword() == null) {
+                        throw new DataValidationException("User password should be specified!");
+                    }
                     if (userCredentials.isEnabled()) {
                         if (StringUtils.isEmpty(userCredentials.getPassword())) {
                             throw new DataValidationException("Enabled user credentials should have password!");

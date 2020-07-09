@@ -149,10 +149,11 @@ public class UserController extends BaseController {
 
         user.setTenantId(appTenant.getTenantId());
         user.setCustomerId(appCustomer.getId());
+        User savedUser = null;
 
         try {
 
-            User savedUser = checkNotNull(userService.saveUser(user));
+            savedUser = checkNotNull(userService.saveUser(user));
             UserCredentials userCredentials = userService.findUserCredentialsByUserId(appTenant.getTenantId(), savedUser.getId());
             userCredentials.setPassword(userDto.getPassword());
             userService.saveUserCredentials(appTenant.getTenantId(), userCredentials);
@@ -160,12 +161,7 @@ public class UserController extends BaseController {
             String activateUrl = String.format(ACTIVATE_URL_PATTERN, baseUrl,
                     userCredentials.getActivateToken());
             String email = savedUser.getEmail();
-            try {
-                mailService.sendActivationEmail(activateUrl, email);
-            } catch (ThingsboardException e) {
-                userService.deleteUser(appTenant.getTenantId(), savedUser.getId());
-                throw e;
-            }
+            mailService.sendActivationEmail(activateUrl, email);
 
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode tokenObject = objectMapper.createObjectNode();
@@ -175,6 +171,7 @@ public class UserController extends BaseController {
             return tokenObject;
 
         } catch (Exception e) {
+            userService.deleteUser(appTenant.getTenantId(), savedUser.getId());
             throw handleException(e);
         }
 
