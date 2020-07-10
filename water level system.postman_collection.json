@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "02d29d72-2814-446d-8d1b-f24ccd95ad7e",
+		"name": "water level system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"_postman_id": "eb7057b4-2fab-4c5e-bac8-5182476faab2",
+			"name": "User",
+			"item": [
+				{
+					"_postman_id": "9f489888-56ee-4cd9-b5d7-7ad5a7cb8669",
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"test@gmail.com\",\n\t\"password\":\"test\",\n\t\"userName\":\"test\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/register",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "5c3517bb-31db-4197-ad04-22ff771e5d6f",
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"test@gmail.com\",\n\t\"password\":\"test\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/auth/login",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
