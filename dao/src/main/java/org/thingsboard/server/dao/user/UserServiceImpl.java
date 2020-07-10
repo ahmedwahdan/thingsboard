@@ -369,7 +369,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                 @Override
                 protected void validateDataImpl(TenantId requestTenantId, User user) {
                     if (StringUtils.isEmpty(user.getEmail())) {
-                        throw new DataValidationException("User email should be specified!");
+                        String error = messages.getMessage("validation.user.email-required", null, localeConfig.getLocale());
+                        throw new DataValidationException(error);
                     }
 
                     validateEmail(user.getEmail());
@@ -417,8 +418,6 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                     if (existentUserWithEmail != null && !isSameData(existentUserWithEmail, user)) {
                         String error = messages.getMessage("validation.user.duplicate-user", null, localeConfig.getLocale());
                         throw new DataValidationException(error);
-//                        throw new DataValidationException("User with email '" + user.getEmail() + "' "
-//                                + " already present in database!");
                     }
                     if (!tenantId.getId().equals(ModelConstants.NULL_UUID)) {
                         Tenant tenant = tenantDao.findById(tenantId, user.getTenantId().getId());
@@ -451,7 +450,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                         throw new DataValidationException("User credentials should be assigned to user!");
                     }
                     if (userCredentials.getPassword() == null) {
-                        throw new DataValidationException("User password should be specified!");
+                        String error = messages.getMessage("validation.user.password-required", null, localeConfig.getLocale());
+                        throw new DataValidationException(error);
                     }
                     if (userCredentials.isEnabled()) {
                         if (StringUtils.isEmpty(userCredentials.getPassword())) {

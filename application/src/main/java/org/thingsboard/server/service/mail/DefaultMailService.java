@@ -33,6 +33,7 @@ import org.thingsboard.server.common.data.exception.ThingsboardErrorCode;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.id.TenantId;
+import org.thingsboard.server.dao.LocaleConfig;
 import org.thingsboard.server.dao.exception.IncorrectParameterException;
 import org.thingsboard.server.dao.settings.AdminSettingsService;
 
@@ -53,6 +54,9 @@ public class DefaultMailService implements MailService {
     public static final String UTF_8 = "UTF-8";
     @Autowired
     private MessageSource messages;
+
+    @Autowired
+    private LocaleConfig localeConfig;
 
     @Autowired
     private Configuration freemarkerConfig;
@@ -280,7 +284,8 @@ public class DefaultMailService implements MailService {
             message = exception.getMessage();
         }
         log.warn("Unable to send mail: {}", message);
-        return new ThingsboardException(String.format("Unable to send mail: %s", message),
+        String error=messages.getMessage("error.general",null,localeConfig.getLocale());
+        return new ThingsboardException(String.format(error),
                 ThingsboardErrorCode.GENERAL);
     }
 

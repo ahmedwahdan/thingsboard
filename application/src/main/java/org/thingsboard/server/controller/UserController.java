@@ -136,23 +136,18 @@ public class UserController extends BaseController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ObjectNode register(@RequestBody UserDto userDto, Locale locale, HttpServletRequest request) throws ThingsboardException {
-
-        localeConfig.setLocale(locale);
+    public ObjectNode register(@RequestBody UserDto userDto, HttpServletRequest request) throws ThingsboardException {
 
         Tenant appTenant = tenantService.getAppTenant();
         Customer appCustomer = customerService.getAppCustomer();
 
         User user = userDto.mapToUser();
-
         user.setAuthority(Authority.CUSTOMER_USER);
-
         user.setTenantId(appTenant.getTenantId());
         user.setCustomerId(appCustomer.getId());
         User savedUser = null;
 
         try {
-
             savedUser = checkNotNull(userService.saveUser(user));
             UserCredentials userCredentials = userService.findUserCredentialsByUserId(appTenant.getTenantId(), savedUser.getId());
             userCredentials.setPassword(userDto.getPassword());
@@ -164,18 +159,15 @@ public class UserController extends BaseController {
             mailService.sendActivationEmail(activateUrl, email);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode tokenObject = objectMapper.createObjectNode();
+            ObjectNode userIdObject = objectMapper.createObjectNode();
 
-            tokenObject.put("userId", savedUser.getId()
-                                               .toString());
-            return tokenObject;
-
+            userIdObject.put("userId", savedUser.getId().toString());
+            return userIdObject;
         } catch (Exception e) {
-            userService.deleteUser(appTenant.getTenantId(), savedUser.getId());
+            if(savedUser != null)
+                userService.deleteUser(appTenant.getTenantId(), savedUser.getId());
             throw handleException(e);
         }
-
-
     }
 
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'TENANT_ADMIN', 'CUSTOMER_USER')")
