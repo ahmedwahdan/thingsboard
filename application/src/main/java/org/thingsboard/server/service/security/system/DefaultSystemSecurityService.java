@@ -27,9 +27,11 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.Rule;
 import org.passay.RuleResult;
+import org.passay.spring.SpringMessageResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -42,6 +44,7 @@ import org.thingsboard.server.common.data.User;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.security.UserCredentials;
+import org.thingsboard.server.dao.LocaleConfig;
 import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.settings.AdminSettingsService;
 import org.thingsboard.server.dao.user.UserService;
@@ -78,6 +81,12 @@ public class DefaultSystemSecurityService implements SystemSecurityService {
 
     @Resource
     private SystemSecurityService self;
+
+    @Autowired
+    MessageSource messageSource;
+
+    @Autowired
+    LocaleConfig localeConfig;
 
     @Cacheable(cacheNames = SECURITY_SETTINGS_CACHE, key = "'securitySettings'")
     @Override
@@ -155,6 +164,10 @@ public class DefaultSystemSecurityService implements SystemSecurityService {
 
     @Override
     public void validatePassword(TenantId tenantId, String password, UserCredentials userCredentials) throws DataValidationException {
+        if(StringUtils.isEmpty(password))
+            throw new DataValidationException(messageSource.getMessage("TOO_SHORT",null,localeConfig.getLocale()));
+
+        password = password.trim();
         SecuritySettings securitySettings = self.getSecuritySettings(tenantId);
         UserPasswordPolicy passwordPolicy = securitySettings.getPasswordPolicy();
 
@@ -172,7 +185,8 @@ public class DefaultSystemSecurityService implements SystemSecurityService {
         if (isPositiveInteger(passwordPolicy.getMinimumSpecialCharacters())) {
             passwordRules.add(new CharacterRule(EnglishCharacterData.Special, passwordPolicy.getMinimumSpecialCharacters()));
         }
-        PasswordValidator validator = new PasswordValidator(passwordRules);
+        SpringMessageResolver springMessageResolver = new SpringMessageResolver(messageSource,localeConfig.getLocale());
+        PasswordValidator validator = new PasswordValidator(springMessageResolver,passwordRules);
         PasswordData passwordData = new PasswordData(password);
         RuleResult result = validator.validate(passwordData);
         if (!result.isValid()) {
