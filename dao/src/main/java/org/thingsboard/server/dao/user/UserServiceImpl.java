@@ -169,7 +169,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     public UserCredentials activateUserCredentials(TenantId tenantId, String activateToken, String password) {
         log.trace("Executing activateUserCredentials activateToken [{}], password [{}]", activateToken, password);
         validateString(activateToken, "Incorrect activateToken " + activateToken);
-        validateString(password, "Incorrect password " + password);
+        if(password != null)
+            validateString(password, "Incorrect password " + password);
         UserCredentials userCredentials = userCredentialsDao.findByActivateToken(tenantId, activateToken);
         if (userCredentials == null) {
             throw new IncorrectParameterException(String.format("Unable to find user credentials by activateToken [%s]", activateToken));
@@ -179,7 +180,8 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
         }
         userCredentials.setEnabled(true);
         userCredentials.setActivateToken(null);
-        userCredentials.setPassword(password);
+        if(password != null)
+            userCredentials.setPassword(password);
 
         return saveUserCredentials(tenantId, userCredentials);
     }
@@ -370,6 +372,11 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                 protected void validateDataImpl(TenantId requestTenantId, User user) {
                     if (StringUtils.isEmpty(user.getEmail())) {
                         String error = messages.getMessage("validation.user.email-required", null, localeConfig.getLocale());
+                        throw new DataValidationException(error);
+                    }
+
+                    if (StringUtils.isEmpty(user.getFirstName()) || StringUtils.isEmpty(user.getFirstName().trim())) {
+                        String error = messages.getMessage("validation.user.username-required", null, localeConfig.getLocale());
                         throw new DataValidationException(error);
                     }
 

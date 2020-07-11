@@ -144,23 +144,26 @@ public class AuthController extends BaseController {
     @RequestMapping(value = "/noauth/activate", params = { "activateToken" }, method = RequestMethod.GET)
     public ResponseEntity<String> checkActivateToken(
             @RequestParam(value = "activateToken") String activateToken) {
-        HttpHeaders headers = new HttpHeaders();
-        HttpStatus responseStatus;
-        UserCredentials userCredentials = userService.findUserCredentialsByActivateToken(TenantId.SYS_TENANT_ID, activateToken);
-        if (userCredentials != null) {
-            String createURI = "/login/createPassword";
-            try {
-                URI location = new URI(createURI + "?activateToken=" + activateToken);
-                headers.setLocation(location);
-                responseStatus = HttpStatus.SEE_OTHER;
-            } catch (URISyntaxException e) {
-                log.error("Unable to create URI with address [{}]", createURI);
-                responseStatus = HttpStatus.BAD_REQUEST;
+
+            HttpHeaders headers = new HttpHeaders();
+            HttpStatus responseStatus;
+
+            UserCredentials userCredentials = userService.findUserCredentialsByActivateToken(TenantId.SYS_TENANT_ID, activateToken);
+            if (userCredentials != null) {
+                userService.activateUserCredentials(TenantId.SYS_TENANT_ID, activateToken, null);
+                String loginURI = "/login";
+                try {
+                    URI location = new URI(loginURI );
+                    headers.setLocation(location);
+                    responseStatus = HttpStatus.SEE_OTHER;
+                } catch (URISyntaxException e) {
+                    log.error("Unable to create URI with address [{}]", loginURI);
+                    responseStatus = HttpStatus.BAD_REQUEST;
+                }
+            } else {
+                responseStatus = HttpStatus.CONFLICT;
             }
-        } else {
-            responseStatus = HttpStatus.CONFLICT;
-        }
-        return new ResponseEntity<>(headers, responseStatus);
+            return new ResponseEntity<>(headers, responseStatus);
     }
     
     @RequestMapping(value = "/noauth/resetPasswordByEmail", method = RequestMethod.POST)

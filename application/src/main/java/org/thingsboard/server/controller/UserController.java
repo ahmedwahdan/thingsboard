@@ -1,12 +1,12 @@
 /**
  * Copyright © 2016-2020 The Thingsboard Authors
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +57,7 @@ import org.thingsboard.server.service.security.model.token.JwtToken;
 import org.thingsboard.server.service.security.model.token.JwtTokenFactory;
 import org.thingsboard.server.service.security.permission.Operation;
 import org.thingsboard.server.service.security.permission.Resource;
+import org.thingsboard.server.service.security.system.SystemSecurityService;
 import org.thingsboard.server.utils.MiscUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,6 +87,12 @@ public class UserController extends BaseController {
 
     @Autowired
     LocaleConfig localeConfig;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SystemSecurityService systemSecurityService;
 
 
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'TENANT_ADMIN', 'CUSTOMER_USER')")
@@ -148,9 +156,12 @@ public class UserController extends BaseController {
         User savedUser = null;
 
         try {
+
             savedUser = checkNotNull(userService.saveUser(user));
+            systemSecurityService.validatePassword(TenantId.SYS_TENANT_ID, userDto.getPassword(), null);
             UserCredentials userCredentials = userService.findUserCredentialsByUserId(appTenant.getTenantId(), savedUser.getId());
-            userCredentials.setPassword(userDto.getPassword());
+            String encodedPassword = passwordEncoder.encode(userDto.getPassword().trim());
+            userCredentials.setPassword(encodedPassword);
             userService.saveUserCredentials(appTenant.getTenantId(), userCredentials);
             String baseUrl = MiscUtils.constructBaseUrl(request);
             String activateUrl = String.format(ACTIVATE_URL_PATTERN, baseUrl,
