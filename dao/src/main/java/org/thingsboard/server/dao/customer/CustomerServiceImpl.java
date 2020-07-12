@@ -172,16 +172,17 @@ public class CustomerServiceImpl extends AbstractEntityService implements Custom
 
     @Override
     public Customer getAppCustomer() {
+        final String appCustomerTitle = "ASER_Customer";
         if(appCustomer != null)
             return appCustomer;
-        List<Customer> customerList = customerDao.find(null);
-        if(customerList.isEmpty()){
+        Optional<Customer> appCustomerOptional = customerDao.findCustomersByTenantIdAndTitle(tenantService.getAppTenant().getTenantId().getId(),appCustomerTitle);
+        if(!appCustomerOptional.isPresent()){
             Customer customer = new Customer();
-            customer.setTitle("TAMAM_Customer");
+            customer.setTitle(appCustomerTitle);
             customer.setTenantId(tenantService.getAppTenant().getTenantId());
             appCustomer = saveCustomer(customer);
         }else{
-            appCustomer = customerList.get(0);
+            appCustomer = appCustomerOptional.get();
         }
         return appCustomer;
     }

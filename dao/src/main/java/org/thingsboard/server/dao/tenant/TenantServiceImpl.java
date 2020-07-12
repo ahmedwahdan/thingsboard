@@ -131,7 +131,7 @@ public class TenantServiceImpl extends AbstractEntityService implements TenantSe
         List<Tenant> tenantList = tenantDao.find(null);
         if(tenantList.isEmpty()){
              Tenant tenant = new Tenant();
-            tenant.setTitle("TAMAM_TENANT");
+            tenant.setTitle("ASER_TENANT");
             appTenant = saveTenant(tenant);
         }else{
             appTenant = tenantList.get(0);

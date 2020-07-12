@@ -53,6 +53,7 @@ import org.thingsboard.server.service.security.exception.UserPasswordExpiredExce
 import org.thingsboard.server.common.data.security.model.SecuritySettings;
 import org.thingsboard.server.common.data.security.model.UserPasswordPolicy;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,9 +171,11 @@ public class DefaultSystemSecurityService implements SystemSecurityService {
         password = password.trim();
         SecuritySettings securitySettings = self.getSecuritySettings(tenantId);
         UserPasswordPolicy passwordPolicy = securitySettings.getPasswordPolicy();
+        //todo handle it from the UI
+        passwordPolicy.setMaximumLength(15);
 
         List<Rule> passwordRules = new ArrayList<>();
-        passwordRules.add(new LengthRule(passwordPolicy.getMinimumLength(), Integer.MAX_VALUE));
+        passwordRules.add(new LengthRule(passwordPolicy.getMinimumLength(),passwordPolicy.getMaximumLength()));
         if (isPositiveInteger(passwordPolicy.getMinimumUppercaseLetters())) {
             passwordRules.add(new CharacterRule(EnglishCharacterData.UpperCase, passwordPolicy.getMinimumUppercaseLetters()));
         }

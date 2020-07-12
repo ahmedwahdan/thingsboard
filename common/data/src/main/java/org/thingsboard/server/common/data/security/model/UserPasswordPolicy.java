@@ -23,6 +23,7 @@ import java.io.Serializable;
 public class UserPasswordPolicy implements Serializable {
 
     private Integer minimumLength;
+    private Integer maximumLength;
     private Integer minimumUppercaseLetters;
     private Integer minimumLowercaseLetters;
     private Integer minimumDigits;

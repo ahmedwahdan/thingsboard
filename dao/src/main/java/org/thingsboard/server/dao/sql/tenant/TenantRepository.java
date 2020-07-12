@@ -24,7 +24,6 @@ import org.springframework.data.repository.query.Param;
 import org.thingsboard.server.dao.model.sql.TenantEntity;
 import org.thingsboard.server.dao.util.SqlDao;
 
-import java.util.List;
 
 /**
  * Created by Valerii Sosliuk on 4/30/2017.
@@ -37,4 +36,5 @@ public interface TenantRepository extends PagingAndSortingRepository<TenantEntit
     Page<TenantEntity> findByRegionNextPage(@Param("region") String region,
                                             @Param("textSearch") String textSearch,
                                             Pageable pageable);
+
 }

@@ -25,22 +25,30 @@ public class UserDto {
     private String id;
     private String email;
     private String password;
-    private String userName;
+    private String firstName;
+    private String lastName;
 
-    public static UserDto mapToUserDto(User user){
+    public static UserDto mapToUserDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setEmail(user.getEmail());
-        userDto.setUserName(user.getFirstName());
-        userDto.setId(user.getId().toString());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setId(user.getId()
+                          .toString());
         return userDto;
     }
 
-    public User mapToUser(){
+    public User mapToUser() {
         User user = new User();
-        user.setFirstName(userName);
-        user.setEmail(email);
-        if(id != null)
-            user.setId(UserId.fromString(id));
+        if (firstName != null)
+            this.firstName = this.firstName.trim();
+        if (lastName != null)
+            this.lastName = this.lastName.trim();
+        user.setFirstName(this.firstName);
+        user.setLastName(this.lastName);
+        user.setEmail(this.email);
+        if (id != null)
+            user.setId(UserId.fromString(this.id));
 
         return user;
     }
