@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "eb7057b4-2fab-4c5e-bac8-5182476faab2",
+			"_postman_id": "2be96687-c847-4b3a-bc60-b2c32e39c2c0",
 			"name": "User",
 			"item": [
 				{
-					"_postman_id": "9f489888-56ee-4cd9-b5d7-7ad5a7cb8669",
+					"_postman_id": "5b9f688e-b2b5-42cc-98e0-78ea7ecd5f01",
 					"name": "register",
 					"request": {
 						"method": "POST",
@@ -26,7 +26,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\":\"test@gmail.com\",\n\t\"password\":\"test\",\n\t\"userName\":\"test\"\n}"
+							"raw": "{\n\t\"email\":\"radwa@gmail.com\",\n\t\"password\":\"test123\",\n\t\"firstName\":\"radwa\",\n\t\"lastName\":\"mansor\"\n}"
 						},
 						"url": {
 							"raw": "{{backend_host}}/api/register",
@@ -42,7 +42,46 @@
 					"response": []
 				},
 				{
-					"_postman_id": "5c3517bb-31db-4197-ad04-22ff771e5d6f",
+					"_postman_id": "4fe8ed27-7097-402a-af9d-af5fbc00e89e",
+					"name": "activate",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"test@gmail.com\",\n\t\"password\":\"test\",\n\t\"userName\":\"test\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/noauth/activate?activateToken=aaa",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"noauth",
+								"activate"
+							],
+							"query": [
+								{
+									"key": "activateToken",
+									"value": "aaa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "8a9f6364-4000-4184-b924-f92ba243fd69",
 					"name": "login",
 					"request": {
 						"method": "POST",
