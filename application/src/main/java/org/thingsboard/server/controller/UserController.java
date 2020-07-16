@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,6 +50,7 @@ import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.security.Authority;
 import org.thingsboard.server.common.data.security.UserCredentials;
 import org.thingsboard.server.dao.LocaleConfig;
+import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dto.UserDto;
 import org.thingsboard.server.queue.util.TbCoreComponent;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
@@ -87,6 +90,9 @@ public class UserController extends BaseController {
 
     @Autowired
     LocaleConfig localeConfig;
+
+    @Autowired
+    MessageSource messages;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -159,6 +165,24 @@ public class UserController extends BaseController {
         User savedUser = null;
 
         try {
+            if (StringUtils.isBlank(user.getFirstName())) {
+                String error = messages.getMessage("validation.user.firstname-required", null, localeConfig.getLocale());
+                throw new DataValidationException(error);
+            }
+            if (user.getFirstName().trim().length()>20) {
+                String error = messages.getMessage("validation.user.firstname-length", null, localeConfig.getLocale());
+                throw new DataValidationException(error);
+            }
+
+            if (StringUtils.isBlank(user.getLastName())) {
+                String error = messages.getMessage("validation.user.lastname-required", null, localeConfig.getLocale());
+                throw new DataValidationException(error);
+            }
+            if (user.getLastName().trim().length()>20) {
+                String error = messages.getMessage("validation.user.lastname-length", null, localeConfig.getLocale());
+                throw new DataValidationException(error);
+            }
+
 
             savedUser = checkNotNull(userService.saveUser(user));
             systemSecurityService.validatePassword(TenantId.SYS_TENANT_ID, userDto.getPassword(), null);

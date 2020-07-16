@@ -375,23 +375,6 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                         throw new DataValidationException(error);
                     }
 
-                    if (StringUtils.isBlank(user.getFirstName())) {
-                        String error = messages.getMessage("validation.user.firstname-required", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
-                    }
-                    if (user.getFirstName().trim().length()>20) {
-                        String error = messages.getMessage("validation.user.firstname-length", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
-                    }
-
-                    if (StringUtils.isBlank(user.getLastName())) {
-                        String error = messages.getMessage("validation.user.lastname-required", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
-                    }
-                    if (user.getLastName().trim().length()>20) {
-                        String error = messages.getMessage("validation.user.lastname-length", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
-                    }
 
                     validateEmail(user.getEmail());
 
