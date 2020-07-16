@@ -58,6 +58,7 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
         JwtToken refreshToken = refreshTokenRepository.requestRefreshToken(securityUser);
 
         Map<String, String> tokenMap = new HashMap<String, String>();
+        tokenMap.put("userId",securityUser.getId().toString());
         tokenMap.put("token", accessToken.getToken());
         tokenMap.put("refreshToken", refreshToken.getToken());
 

@@ -18,6 +18,8 @@ package org.thingsboard.server.service.security.auth.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -29,6 +31,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.thingsboard.server.dao.LocaleConfig;
 import org.thingsboard.server.service.security.exception.AuthMethodNotSupportedException;
 import org.thingsboard.server.service.security.model.UserPrincipal;
 
@@ -48,6 +51,12 @@ public class RestLoginProcessingFilter extends AbstractAuthenticationProcessingF
 
     private final ObjectMapper objectMapper;
 
+    @Autowired
+    LocaleConfig localeConfig;
+
+    @Autowired
+    MessageSource messageSource;
+
     public RestLoginProcessingFilter(String defaultProcessUrl, AuthenticationSuccessHandler successHandler,
                                      AuthenticationFailureHandler failureHandler, ObjectMapper mapper) {
         super(defaultProcessUrl);
@@ -59,6 +68,7 @@ public class RestLoginProcessingFilter extends AbstractAuthenticationProcessingF
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
+        localeConfig.setLocale(request.getLocale());
         if (!HttpMethod.POST.name().equals(request.getMethod())) {
             if(log.isDebugEnabled()) {
                 log.debug("Authentication method not supported. Request method: " + request.getMethod());
@@ -74,7 +84,8 @@ public class RestLoginProcessingFilter extends AbstractAuthenticationProcessingF
         }
 
         if (StringUtils.isBlank(loginRequest.getUsername()) || StringUtils.isBlank(loginRequest.getPassword())) {
-            throw new AuthenticationServiceException("Username or Password not provided");
+            String error = messageSource.getMessage("login.error.bad_request",null,localeConfig.getLocale());
+            throw new AuthenticationServiceException(error);
         }
 
         UserPrincipal principal = new UserPrincipal(UserPrincipal.Type.USER_NAME, loginRequest.getUsername());

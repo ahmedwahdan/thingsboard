@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "2be96687-c847-4b3a-bc60-b2c32e39c2c0",
+			"_postman_id": "00832e4f-165a-48f9-82a3-240ad920f6bb",
 			"name": "User",
 			"item": [
 				{
-					"_postman_id": "5b9f688e-b2b5-42cc-98e0-78ea7ecd5f01",
+					"_postman_id": "14fa5dc8-1c14-48b3-bbbc-05ade9b90015",
 					"name": "register",
 					"request": {
 						"method": "POST",
@@ -42,7 +42,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "4fe8ed27-7097-402a-af9d-af5fbc00e89e",
+					"_postman_id": "53b84d73-2260-45c6-bfe5-ace8a2f396eb",
 					"name": "activate",
 					"request": {
 						"method": "GET",
@@ -81,7 +81,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "8a9f6364-4000-4184-b924-f92ba243fd69",
+					"_postman_id": "2a4204db-0673-4813-885b-693d4caddc90",
 					"name": "login",
 					"request": {
 						"method": "POST",
@@ -89,11 +89,15 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\":\"test@gmail.com\",\n\t\"password\":\"test\"\n}"
+							"raw": "{\n\t\"email\":\"radwa@gmail.com\",\n\t\"password\":\"test123\"\n}"
 						},
 						"url": {
 							"raw": "{{backend_host}}/api/auth/login",

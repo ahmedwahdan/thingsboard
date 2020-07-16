@@ -18,6 +18,7 @@ package org.thingsboard.server.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,11 +26,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.thingsboard.server.common.data.exception.ThingsboardErrorCode;
 import org.thingsboard.server.common.data.exception.ThingsboardException;
 import org.thingsboard.server.common.msg.tools.TbRateLimitsException;
+import org.thingsboard.server.dao.LocaleConfig;
 import org.thingsboard.server.service.security.exception.AuthMethodNotSupportedException;
 import org.thingsboard.server.service.security.exception.JwtExpiredTokenException;
 import org.thingsboard.server.service.security.exception.UserPasswordExpiredException;
@@ -45,6 +48,12 @@ public class ThingsboardErrorResponseHandler implements AccessDeniedHandler {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    MessageSource messageSource;
+
+    @Autowired
+    LocaleConfig localeConfig;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -137,12 +146,15 @@ public class ThingsboardErrorResponseHandler implements AccessDeniedHandler {
 
     private void handleAuthenticationException(AuthenticationException authenticationException, HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        if (authenticationException instanceof BadCredentialsException) {
-            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("Invalid username or password", ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+        if (authenticationException instanceof BadCredentialsException || authenticationException instanceof UsernameNotFoundException) {
+            String error = messageSource.getMessage("login.error.bad_credentials",null,localeConfig.getLocale());
+            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof DisabledException) {
-            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("User account is not active", ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+            String error = messageSource.getMessage("login.error.inactive_user",null,localeConfig.getLocale());
+            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof LockedException) {
-            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("User account is locked due to security policy", ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+            String error = messageSource.getMessage("login.error.locked_user",null,localeConfig.getLocale());
+            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof JwtExpiredTokenException) {
             mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("Token has expired", ThingsboardErrorCode.JWT_TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof AuthMethodNotSupportedException) {
@@ -152,7 +164,7 @@ public class ThingsboardErrorResponseHandler implements AccessDeniedHandler {
             String resetToken = expiredException.getResetToken();
             mapper.writeValue(response.getWriter(), ThingsboardCredentialsExpiredResponse.of(expiredException.getMessage(), resetToken));
         } else {
-            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("Authentication failed", ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(authenticationException.getMessage(), ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         }
     }
 
