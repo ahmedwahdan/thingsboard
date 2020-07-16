@@ -98,10 +98,13 @@ public class UserController extends BaseController {
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'TENANT_ADMIN', 'CUSTOMER_USER')")
     @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
     @ResponseBody
-    public User getUserById(@PathVariable(USER_ID) String strUserId) throws ThingsboardException {
+    public User getUserById(@PathVariable(USER_ID) String strUserId,@RequestParam(required = false,name = "summary")boolean isSummaryView) throws ThingsboardException {
         checkParameter(USER_ID, strUserId);
         try {
             UserId userId = new UserId(toUUID(strUserId));
+            User user = checkUserId(userId, Operation.READ);
+            if(isSummaryView)
+                return user.retrieveSummaryView();
             return checkUserId(userId, Operation.READ);
         } catch (Exception e) {
             throw handleException(e);

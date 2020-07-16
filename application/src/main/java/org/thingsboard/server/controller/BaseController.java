@@ -240,7 +240,8 @@ public abstract class BaseController {
 
     <T> T checkNotNull(T reference) throws ThingsboardException {
         if (reference == null) {
-            throw new ThingsboardException("Requested item wasn't found!", ThingsboardErrorCode.ITEM_NOT_FOUND);
+            String error= messageSource.getMessage("error.item_not_found",null,localeConfig.getLocale());
+            throw new ThingsboardException(error, ThingsboardErrorCode.ITEM_NOT_FOUND);
         }
         return reference;
     }
@@ -335,7 +336,8 @@ public abstract class BaseController {
 
     User checkUserId(UserId userId, Operation operation) throws ThingsboardException {
         try {
-            validateId(userId, "Incorrect userId " + userId);
+            String error = messageSource.getMessage("error.incorrect_user_id",null,localeConfig.getLocale());
+            validateId(userId, error + userId);
             User user = userService.findUserById(getCurrentUser().getTenantId(), userId);
             checkNotNull(user);
             accessControlService.checkPermission(getCurrentUser(), Resource.USER, operation, userId, user);

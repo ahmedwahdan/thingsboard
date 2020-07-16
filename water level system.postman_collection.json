@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "00832e4f-165a-48f9-82a3-240ad920f6bb",
+			"_postman_id": "de56446f-5775-44f1-8b4a-bd9981d2720e",
 			"name": "User",
 			"item": [
 				{
-					"_postman_id": "14fa5dc8-1c14-48b3-bbbc-05ade9b90015",
+					"_postman_id": "99465830-fdfe-465f-b2f8-b9d3c8059fca",
 					"name": "register",
 					"request": {
 						"method": "POST",
@@ -42,7 +42,53 @@
 					"response": []
 				},
 				{
-					"_postman_id": "53b84d73-2260-45c6-bfe5-ace8a2f396eb",
+					"_postman_id": "368af75b-8fa2-4552-a870-22522abb46ad",
+					"name": "get user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							},
+							{
+								"key": "x-Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWR3YV9tYW5zb3JAeWFob28uY29tIiwic2NvcGVzIjpbIkNVU1RPTUVSX1VTRVIiXSwidXNlcklkIjoiNjczOGI5MDAtYzcxNi0xMWVhLTg0YmEtOTNjOTcwMmViODcwIiwiZmlyc3ROYW1lIjoicmFkd2EiLCJsYXN0TmFtZSI6Im1hbnNvciIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiJiMDc4YTgxMC1iZmIzLTExZWEtOGExZi02ZDQ5YzYyYzRiNWQiLCJjdXN0b21lcklkIjoiMTdhODlkMjAtYzQ3Ny0xMWVhLWIyNDctNjlhZWExN2NhMjEzIiwiaXNzIjoidGhpbmdzYm9hcmQuaW8iLCJpYXQiOjE1OTQ4NzEwMTYsImV4cCI6MTU5NDg4MDAxNn0.E6JU7m7yOLByt8E8RPOFeYIOmcDj04Hd6BiSB2j7l2J7-KwIbMTvtETB3gxJBq0Lq-djri6q71lTKmcoaQP4wQ"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"radwa@gmail.com\",\n\t\"password\":\"test123\",\n\t\"firstName\":\"radwa\",\n\t\"lastName\":\"mansor\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/user/6738b900-c716-11ea-84ba-93c9702eb870?summary=true",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"6738b900-c716-11ea-84ba-93c9702eb870"
+							],
+							"query": [
+								{
+									"key": "summary",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "e95f445f-73e3-4ae5-803e-1901e7b58896",
 					"name": "activate",
 					"request": {
 						"method": "GET",
@@ -81,7 +127,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "2a4204db-0673-4813-885b-693d4caddc90",
+					"_postman_id": "43b56f66-096a-4c1d-b1e5-ded43a2ab8a9",
 					"name": "login",
 					"request": {
 						"method": "POST",

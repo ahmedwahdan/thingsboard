@@ -16,6 +16,8 @@
 package org.thingsboard.server.common.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import org.thingsboard.server.common.data.id.CustomerId;
@@ -24,9 +26,9 @@ import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.id.UserId;
 import org.thingsboard.server.common.data.security.Authority;
 
-import com.fasterxml.jackson.databind.JsonNode;
 
 @EqualsAndHashCode(callSuper = true)
+@JsonInclude(Include.NON_NULL)
 public class User extends SearchTextBasedWithAdditionalInfo<UserId> implements HasName, HasTenantId, HasCustomerId {
 
     private static final long serialVersionUID = 8250339805336035966L;
@@ -37,6 +39,7 @@ public class User extends SearchTextBasedWithAdditionalInfo<UserId> implements H
     private Authority authority;
     private String firstName;
     private String lastName;
+    private boolean summary;
 
     public User() {
         super();
@@ -83,6 +86,8 @@ public class User extends SearchTextBasedWithAdditionalInfo<UserId> implements H
     @Override
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getName() {
+        if(isSummary())
+            return null;
         return email;
     }
 
@@ -108,6 +113,15 @@ public class User extends SearchTextBasedWithAdditionalInfo<UserId> implements H
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @JsonIgnore
+    public boolean isSummary() {
+        return summary;
+    }
+
+    public void setSummary(boolean summary) {
+        this.summary = summary;
     }
 
     @Override
@@ -153,5 +167,14 @@ public class User extends SearchTextBasedWithAdditionalInfo<UserId> implements H
     @JsonIgnore
     public boolean isCustomerUser() {
         return !isSystemAdmin() && !isTenantAdmin();
+    }
+
+    public User retrieveSummaryView(){
+        User user = new User();
+        user.setSummary(true);
+        user.setEmail(this.getEmail());
+        user.setFirstName(this.getFirstName());
+        user.setLastName(this.getLastName());
+        return user;
     }
 }
