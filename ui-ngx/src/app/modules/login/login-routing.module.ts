@@ -22,6 +22,7 @@ import { AuthGuard } from '@core/guards/auth.guard';
 import { ResetPasswordRequestComponent } from '@modules/login/pages/login/reset-password-request.component';
 import { ResetPasswordComponent } from '@modules/login/pages/login/reset-password.component';
 import { CreatePasswordComponent } from '@modules/login/pages/login/create-password.component';
+import { RegisterComponent } from './pages/login/register/register.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,15 @@ const routes: Routes = [
     component: LoginComponent,
     data: {
       title: 'login.login',
+      module: 'public'
+    },
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    data: {
+      title: 'register',
       module: 'public'
     },
     canActivate: [AuthGuard]

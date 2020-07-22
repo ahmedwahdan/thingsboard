@@ -1347,6 +1347,8 @@
     },
     "login": {
         "login": "Login",
+        "register": "Register",
+        "registration": "Registration",
         "request-password-reset": "Request Password Reset",
         "reset-password": "Reset Password",
         "create-password": "Create Password",
