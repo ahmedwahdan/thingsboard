@@ -237,8 +237,10 @@ export class GlobalHttpInterceptor implements HttpInterceptor {
   }
 
   private isTokenBasedAuthEntryPoint(url): boolean {
+    console.log('Token');
     return  url.startsWith('/api/') &&
       !url.startsWith(Constants.entryPoints.login) &&
+      !url.startsWith(Constants.entryPoints.register) &&
       !url.startsWith(Constants.entryPoints.tokenRefresh) &&
       !url.startsWith(Constants.entryPoints.nonTokenBased);
   }

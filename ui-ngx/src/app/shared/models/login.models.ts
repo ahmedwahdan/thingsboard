@@ -19,6 +19,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  userId: string;
+}
+
 export interface PublicLoginRequest {
   publicId: string;
 }

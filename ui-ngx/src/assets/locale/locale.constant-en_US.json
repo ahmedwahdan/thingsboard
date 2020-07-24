@@ -1347,6 +1347,11 @@
     },
     "login": {
         "login": "Login",
+        "register": "Register",
+        "registration": "Registration",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "activation_mail_was_sent":"Please check your inbox for activation email",
         "request-password-reset": "Request Password Reset",
         "reset-password": "Reset Password",
         "create-password": "Create Password",
