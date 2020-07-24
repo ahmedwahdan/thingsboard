@@ -33,6 +33,8 @@ import { Router } from '@angular/router';
 export class RegisterComponent extends PageComponent implements OnInit {
 
   registrationRequest = this.fb.group({
+    firstName: [''],
+    lastName: [''],
     email: [''],
     password: ['']
   });
@@ -48,13 +50,12 @@ export class RegisterComponent extends PageComponent implements OnInit {
   }
 
   register() {
-    // this.authService.sendResetPasswordLink(this.requestPasswordRequest.get('email').value).subscribe(
-    //   () => {
-    //     this.store.dispatch(new ActionNotificationShow({ message: this.translate.instant('login.password-link-sent-message'),
-    //       type: 'success' }));
-    //   }
-    // );
-    console.log('Register');
+    this.authService.register(this.registrationRequest.value).subscribe(
+      () => {
+        this.store.dispatch(new ActionNotificationShow({ message: this.translate.instant('login.activation_mail_was_sent'),
+          type: 'success' }));
+      }
+    );
   }
 
 

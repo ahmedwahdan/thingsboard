@@ -21,7 +21,7 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 
-import { LoginRequest, LoginResponse, OAuth2Client, PublicLoginRequest } from '@shared/models/login.models';
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, OAuth2Client, PublicLoginRequest } from '@shared/models/login.models';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { defaultHttpOptions } from '../http/http-utils';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
@@ -118,6 +118,12 @@ export class AuthService {
         }
       ));
   }
+
+  public register(registerRequest: RegisterRequest): Observable<RegisterResponse> {
+    console.log("register API");
+    return this.http.post<RegisterResponse>('/api/register', registerRequest, defaultHttpOptions());
+  }
+
 
   public publicLogin(publicId: string): Observable<LoginResponse> {
     const publicLoginRequest: PublicLoginRequest = {
