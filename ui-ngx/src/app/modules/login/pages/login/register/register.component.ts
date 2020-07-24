@@ -23,6 +23,7 @@ import { PageComponent } from '@shared/components/page.component';
 import { FormBuilder } from '@angular/forms';
 import { ActionNotificationShow } from '@core/notification/notification.actions';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tb-register',
@@ -31,7 +32,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class RegisterComponent extends PageComponent implements OnInit {
 
-  registerationRequest = this.fb.group({
+  registrationRequest = this.fb.group({
     email: [''],
     password: ['']
   });
@@ -55,5 +56,6 @@ export class RegisterComponent extends PageComponent implements OnInit {
     // );
     console.log('Register');
   }
+
 
 }

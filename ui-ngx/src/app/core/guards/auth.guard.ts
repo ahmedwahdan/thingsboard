@@ -84,7 +84,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
             // this.authService.gotoDefaultPlace(false);
             return of(this.authService.defaultUrl(false));
           } else {
-            if (path === 'login') {
+            if (path === 'login' || path === 'register') {
               return forkJoin([this.authService.loadOAuth2Clients()]).pipe(
                 map(() => {
                   return true;
