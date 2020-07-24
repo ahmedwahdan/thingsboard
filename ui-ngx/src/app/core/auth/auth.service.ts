@@ -274,7 +274,7 @@ export class AuthService {
       const publicId = this.utils.getQueryParam('publicId');
       const accessToken = this.utils.getQueryParam('accessToken');
       const refreshToken = this.utils.getQueryParam('refreshToken');
-      const username = this.utils.getQueryParam('username');
+      const email = this.utils.getQueryParam('username');
       const password = this.utils.getQueryParam('password');
       const loginError = this.utils.getQueryParam('loginError');
       if (publicId) {
@@ -306,11 +306,11 @@ export class AuthService {
           return throwError(e);
         }
         return this.procceedJwtTokenValidate();
-      } else if (username && password) {
+      } else if (email && password) {
         this.utils.updateQueryParam('username', null);
         this.utils.updateQueryParam('password', null);
         const loginRequest: LoginRequest = {
-          username,
+          email,
           password
         };
         return this.http.post<LoginResponse>('/api/auth/login', loginRequest, defaultHttpOptions()).pipe(

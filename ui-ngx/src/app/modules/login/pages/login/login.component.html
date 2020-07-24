@@ -30,9 +30,9 @@
             <span style="height: 50px;"></span>
             <mat-form-field>
               <mat-label translate>login.username</mat-label>
-              <input id="username-input" matInput type="email" autofocus formControlName="username" email required/>
+              <input id="username-input" matInput type="email" autofocus formControlName="email" email required/>
               <mat-icon matPrefix>email</mat-icon>
-              <mat-error *ngIf="loginFormGroup.get('username').invalid">
+              <mat-error *ngIf="loginFormGroup.get('email').invalid">
                 {{ 'user.invalid-email-format' | translate }}
               </mat-error>
             </mat-form-field>
