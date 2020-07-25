@@ -154,7 +154,7 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     @Override
     public UserCredentials findUserCredentialsByResetToken(TenantId tenantId, String resetToken) {
         log.trace("Executing findUserCredentialsByResetToken [{}]", resetToken);
-        validateString(resetToken, "Incorrect resetToken " + resetToken);
+        validateString(resetToken, "error.incorrect_resettoken" + resetToken);
         return userCredentialsDao.findByResetToken(tenantId, resetToken);
     }
 
@@ -189,14 +189,15 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
     @Override
     public UserCredentials requestPasswordReset(TenantId tenantId, String email) {
         log.trace("Executing requestPasswordReset email [{}]", email);
-        validateString(email, "Incorrect email " + email);
+
+        validateString(email, messages.getMessage("error.incorrect_email",null,localeConfig.getLocale()) + email);
         User user = userDao.findByEmail(tenantId, email);
         if (user == null) {
-            throw new IncorrectParameterException(String.format("Unable to find user by email [%s]", email));
+            throw new IncorrectParameterException(messages.getMessage("error.email_not_found",null,localeConfig.getLocale())+ email);
         }
         UserCredentials userCredentials = userCredentialsDao.findByUserId(tenantId, user.getUuidId());
         if (!userCredentials.isEnabled()) {
-            throw new IncorrectParameterException("Unable to reset password for inactive user");
+            throw new IncorrectParameterException("error.inactive_user");
         }
         userCredentials.setResetToken(RandomStringUtils.randomAlphanumeric(DEFAULT_TOKEN_LENGTH));
         return saveUserCredentials(tenantId, userCredentials);
@@ -371,8 +372,7 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                 @Override
                 protected void validateDataImpl(TenantId requestTenantId, User user) {
                     if (StringUtils.isEmpty(user.getEmail())) {
-                        String error = messages.getMessage("validation.user.email-required", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
+                        throw new DataValidationException("validation.user.email-required");
                     }
 
 
@@ -419,8 +419,7 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
 
                     User existentUserWithEmail = findUserByEmail(tenantId, user.getEmail());
                     if (existentUserWithEmail != null && !isSameData(existentUserWithEmail, user)) {
-                        String error = messages.getMessage("validation.user.duplicate-user", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
+                        throw new DataValidationException("validation.user.duplicate-user");
                     }
                     if (!tenantId.getId().equals(ModelConstants.NULL_UUID)) {
                         Tenant tenant = tenantDao.findById(tenantId, user.getTenantId().getId());
@@ -451,10 +450,6 @@ public class UserServiceImpl extends AbstractEntityService implements UserServic
                 protected void validateDataImpl(TenantId tenantId, UserCredentials userCredentials) {
                     if (userCredentials.getUserId() == null) {
                         throw new DataValidationException("User credentials should be assigned to user!");
-                    }
-                    if (userCredentials.getPassword() == null) {
-                        String error = messages.getMessage("validation.user.password-required", null, localeConfig.getLocale());
-                        throw new DataValidationException(error);
                     }
                     if (userCredentials.isEnabled()) {
                         if (StringUtils.isEmpty(userCredentials.getPassword())) {

@@ -124,7 +124,8 @@ public class ThingsboardErrorResponseHandler implements AccessDeniedHandler {
         }
 
         response.setStatus(status.value());
-        mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(thingsboardException.getMessage(), errorCode, status));
+        String error=messageSource.getMessage(thingsboardException.getMessage(),null,thingsboardException.getMessage(),localeConfig.getLocale());
+        mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, errorCode, status));
     }
 
     private void handleRateLimitException(HttpServletResponse response, TbRateLimitsException exception) throws IOException {
@@ -150,13 +151,14 @@ public class ThingsboardErrorResponseHandler implements AccessDeniedHandler {
             String error = messageSource.getMessage("login.error.bad_credentials",null,localeConfig.getLocale());
             mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof DisabledException) {
-            String error = messageSource.getMessage("login.error.inactive_user",null,localeConfig.getLocale());
+            String error = messageSource.getMessage("error.inactive_user",null,localeConfig.getLocale());
             mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof LockedException) {
             String error = messageSource.getMessage("login.error.locked_user",null,localeConfig.getLocale());
             mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof JwtExpiredTokenException) {
-            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of("Token has expired", ThingsboardErrorCode.JWT_TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
+            String error = messageSource.getMessage("error.expired_token",null,localeConfig.getLocale());
+            mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(error, ThingsboardErrorCode.JWT_TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof AuthMethodNotSupportedException) {
             mapper.writeValue(response.getWriter(), ThingsboardErrorResponse.of(authenticationException.getMessage(), ThingsboardErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         } else if (authenticationException instanceof UserPasswordExpiredException) {

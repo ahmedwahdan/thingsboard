@@ -182,6 +182,9 @@ public class UserController extends BaseController {
                 String error = messages.getMessage("validation.user.lastname-length", null, localeConfig.getLocale());
                 throw new DataValidationException(error);
             }
+            if (StringUtils.isBlank(userDto.getPassword())) {
+                throw new DataValidationException("validation.user.password-required");
+            }
 
 
             savedUser = checkNotNull(userService.saveUser(user));

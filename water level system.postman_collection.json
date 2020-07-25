@@ -6,11 +6,11 @@
 	},
 	"item": [
 		{
-			"_postman_id": "de56446f-5775-44f1-8b4a-bd9981d2720e",
+			"_postman_id": "355d676f-7730-4d1f-88fe-5c08f467a038",
 			"name": "User",
 			"item": [
 				{
-					"_postman_id": "99465830-fdfe-465f-b2f8-b9d3c8059fca",
+					"_postman_id": "f2886014-65fc-43b0-8eb5-171374ad1fe4",
 					"name": "register",
 					"request": {
 						"method": "POST",
@@ -42,7 +42,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "368af75b-8fa2-4552-a870-22522abb46ad",
+					"_postman_id": "260de20a-24db-49b4-94b4-081bd62f77bd",
 					"name": "get user",
 					"request": {
 						"auth": {
@@ -88,7 +88,119 @@
 					"response": []
 				},
 				{
-					"_postman_id": "e95f445f-73e3-4ae5-803e-1901e7b58896",
+					"_postman_id": "487af239-6f1e-4c40-9cd5-d294a7d47840",
+					"name": "reset password by email",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"radwamansor@gmail.com\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/noauth/resetPasswordByEmail",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"noauth",
+								"resetPasswordByEmail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "8d05a7a1-68b6-426b-bc43-5b15713c460b",
+					"name": "reset password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"resetToken\":\"f0Jzpf8a5iXzmR03SBp4KaxiD7WonV\",\n\t\"password\":\"test123\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/noauth/resetPassword",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"noauth",
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "650931cf-a730-42be-895c-871a026356a2",
+					"name": "change password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "ar"
+							},
+							{
+								"key": "x-Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWR3YW1hbnNvckBnbWFpbC5jb20iLCJzY29wZXMiOlsiU1lTX0FETUlOIl0sInVzZXJJZCI6ImFmMjllMGYwLWJmYjMtMTFlYS04YTFmLTZkNDljNjJjNGI1ZCIsImZpcnN0TmFtZSI6InJhZHdhIiwibGFzdE5hbWUiOiJtYW5zb3IiLCJlbmFibGVkIjp0cnVlLCJpc1B1YmxpYyI6ZmFsc2UsInRlbmFudElkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIiwiY3VzdG9tZXJJZCI6IjEzODE0MDAwLTFkZDItMTFiMi04MDgwLTgwODA4MDgwODA4MCIsImlzcyI6InRoaW5nc2JvYXJkLmlvIiwiaWF0IjoxNTk1NjQyMDAwLCJleHAiOjE1OTU2NTEwMDB9.oTEY8nnTQDSH284-WUamo3qPW-5HRT-k2msS-l2SpZyjXLuAsz-98okW_jKc6TP3CDtZRxx4uxpMM8iFh8cPnQ"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"currentPassword\":\"test1234\",\n\t\"newPassword\":\"1234\"\n}"
+						},
+						"url": {
+							"raw": "{{backend_host}}/api/auth/changePassword",
+							"host": [
+								"{{backend_host}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"_postman_id": "123191a2-2e43-4ba2-938e-90d6032121cb",
 					"name": "activate",
 					"request": {
 						"method": "GET",
@@ -127,7 +239,7 @@
 					"response": []
 				},
 				{
-					"_postman_id": "43b56f66-096a-4c1d-b1e5-ded43a2ab8a9",
+					"_postman_id": "821a9a36-6196-4b5a-a891-3f99823b99ee",
 					"name": "login",
 					"request": {
 						"method": "POST",

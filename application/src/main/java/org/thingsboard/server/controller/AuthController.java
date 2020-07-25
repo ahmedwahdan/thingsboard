@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.oauth2.OAuth2ClientInfo;
 import org.thingsboard.server.common.data.security.UserCredentials;
 import org.thingsboard.server.dao.audit.AuditLogService;
+import org.thingsboard.server.dao.exception.DataValidationException;
 import org.thingsboard.server.dao.oauth2.OAuth2Service;
 import org.thingsboard.server.queue.util.TbCoreComponent;
 import org.thingsboard.server.service.security.auth.jwt.RefreshTokenRepository;
@@ -111,16 +113,22 @@ public class AuthController extends BaseController {
     public void changePassword (
             @RequestBody JsonNode changePasswordRequest) throws ThingsboardException {
         try {
+            if (changePasswordRequest.get("currentPassword") == null || StringUtils.isBlank(changePasswordRequest.get("currentPassword").asText())) {
+                throw new DataValidationException("validation.current-password-required");
+            }
+            if (StringUtils.isBlank(changePasswordRequest.get("newPassword").asText())) {
+                throw new DataValidationException("validation.new-password-required");
+            }
             String currentPassword = changePasswordRequest.get("currentPassword").asText();
             String newPassword = changePasswordRequest.get("newPassword").asText();
             SecurityUser securityUser = getCurrentUser();
             UserCredentials userCredentials = userService.findUserCredentialsByUserId(TenantId.SYS_TENANT_ID, securityUser.getId());
             if (!passwordEncoder.matches(currentPassword, userCredentials.getPassword())) {
-                throw new ThingsboardException("Current password doesn't match!", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+                throw new ThingsboardException("error.current_password_dismatch", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
             }
             systemSecurityService.validatePassword(securityUser.getTenantId(), newPassword, userCredentials);
             if (passwordEncoder.matches(newPassword, userCredentials.getPassword())) {
-                throw new ThingsboardException("New password should be different from existing!", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+                throw new ThingsboardException("error.new_password_different", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
             }
             userCredentials.setPassword(passwordEncoder.encode(newPassword));
             userService.replaceUserCredentials(securityUser.getTenantId(), userCredentials);
@@ -172,6 +180,9 @@ public class AuthController extends BaseController {
             @RequestBody JsonNode resetPasswordByEmailRequest,
             HttpServletRequest request) throws ThingsboardException {
         try {
+            if (resetPasswordByEmailRequest.get("email") == null || StringUtils.isBlank(resetPasswordByEmailRequest.get("email").asText())) {
+                throw new DataValidationException("validation.user.email-required");
+            }
             String email = resetPasswordByEmailRequest.get("email").asText();
             UserCredentials userCredentials = userService.requestPasswordReset(TenantId.SYS_TENANT_ID, email);
             String baseUrl = MiscUtils.constructBaseUrl(request);
@@ -254,13 +265,19 @@ public class AuthController extends BaseController {
             @RequestBody JsonNode resetPasswordRequest,
             HttpServletRequest request) throws ThingsboardException {
         try {
+            if (resetPasswordRequest.get("resetToken") == null || StringUtils.isBlank(resetPasswordRequest.get("resetToken").asText())) {
+                throw new DataValidationException("validation.resettoken-required");
+            }
+            if (resetPasswordRequest.get("resetToken") == null || StringUtils.isBlank(resetPasswordRequest.get("resetToken").asText())) {
+                throw new DataValidationException("validation.user.password-required");
+            }
             String resetToken = resetPasswordRequest.get("resetToken").asText();
             String password = resetPasswordRequest.get("password").asText();
             UserCredentials userCredentials = userService.findUserCredentialsByResetToken(TenantId.SYS_TENANT_ID, resetToken);
             if (userCredentials != null) {
                 systemSecurityService.validatePassword(TenantId.SYS_TENANT_ID, password, userCredentials);
                 if (passwordEncoder.matches(password, userCredentials.getPassword())) {
-                    throw new ThingsboardException("New password should be different from existing!", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+                    throw new ThingsboardException("error.new_password_different", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
                 }
                 String encodedPassword = passwordEncoder.encode(password);
                 userCredentials.setPassword(encodedPassword);
@@ -283,7 +300,7 @@ public class AuthController extends BaseController {
                 tokenObject.put("refreshToken", refreshToken.getToken());
                 return tokenObject;
             } else {
-                throw new ThingsboardException("Invalid reset token!", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+                throw new ThingsboardException("error.invalid_resetToken", ThingsboardErrorCode.BAD_REQUEST_PARAMS);
             }
         } catch (Exception e) {
             throw handleException(e);

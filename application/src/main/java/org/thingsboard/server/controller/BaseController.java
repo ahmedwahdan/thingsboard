@@ -231,7 +231,8 @@ public abstract class BaseController {
             return (ThingsboardException) exception;
         } else if (exception instanceof IllegalArgumentException || exception instanceof IncorrectParameterException
                 || exception instanceof DataValidationException || cause.contains("IncorrectParameterException")) {
-            return new ThingsboardException(exception.getMessage(), ThingsboardErrorCode.BAD_REQUEST_PARAMS);
+            String error=messageSource.getMessage(exception.getMessage(),null,exception.getMessage(),localeConfig.getLocale());
+            return new ThingsboardException(error, ThingsboardErrorCode.BAD_REQUEST_PARAMS);
         } else{
             String error=messageSource.getMessage("error.general",null,localeConfig.getLocale());
             return new ThingsboardException(error, ThingsboardErrorCode.GENERAL);
