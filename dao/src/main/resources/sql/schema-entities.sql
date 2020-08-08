@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS dashboard (
 CREATE TABLE IF NOT EXISTS device (
     id varchar(31) NOT NULL CONSTRAINT device_pkey PRIMARY KEY,
     additional_info varchar,
-    customer_id varchar(31),
+    customer_id varchar,
     type varchar(255),
     name varchar(255),
     label varchar(255),

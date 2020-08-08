@@ -25,7 +25,7 @@
   <button mat-raised-button color="primary"
           [disabled]="(isLoading$ | async)"
           (click)="onEntityAction($event, 'assignToCustomer')"
-          [fxShow]="!isEdit && deviceScope === 'tenant' && !isAssignedToCustomer(entity)">
+          [fxShow]="!isEdit && deviceScope === 'tenant'">
     {{'device.assign-to-customer' | translate }}
   </button>
   <button mat-raised-button color="primary"

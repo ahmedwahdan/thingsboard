@@ -20,6 +20,7 @@ import { EntityType } from '@shared/models/entity-type.models';
 export class CustomerId implements EntityId {
   entityType = EntityType.CUSTOMER;
   id: string;
+  ids: string[];
   constructor(id: string) {
     this.id = id;
   }

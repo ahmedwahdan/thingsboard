@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Created by ashvayka on 11.05.17.
@@ -32,6 +33,15 @@ public class EntityIdSerializer extends JsonSerializer<EntityId> {
         gen.writeStartObject();
         gen.writeStringField("entityType", value.getEntityType().name());
         gen.writeStringField("id", value.getId().toString());
+        if(value instanceof CustomerId && ((CustomerId) value).getIds()!=null){
+            gen.writeArrayFieldStart("ids");
+            for (UUID uuid :
+                    ((CustomerId) value).getIds()) {
+                gen.writeString(uuid.toString());
+            }
+            gen.writeEndArray();
+        }
+
         gen.writeEndObject();
     }
 }

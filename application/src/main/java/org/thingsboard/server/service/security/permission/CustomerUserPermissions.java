@@ -16,10 +16,7 @@
 package org.thingsboard.server.service.security.permission;
 
 import org.springframework.stereotype.Component;
-import org.thingsboard.server.common.data.DashboardInfo;
-import org.thingsboard.server.common.data.HasCustomerId;
-import org.thingsboard.server.common.data.HasTenantId;
-import org.thingsboard.server.common.data.User;
+import org.thingsboard.server.common.data.*;
 import org.thingsboard.server.common.data.id.DashboardId;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.id.UserId;
@@ -58,7 +55,7 @@ public class CustomerUserPermissions extends AbstractPermissions {
                     if (!(entity instanceof HasCustomerId)) {
                         return false;
                     }
-                    if (!operation.equals(Operation.CLAIM_DEVICES) && !user.getCustomerId().equals(((HasCustomerId) entity).getCustomerId())) {
+                    if (!operation.equals(Operation.CLAIM_DEVICES) && (!user.getCustomerId().equals(((HasCustomerId) entity).getCustomerId()))) {
                         return false;
                     }
                     return true;

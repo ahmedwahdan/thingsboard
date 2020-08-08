@@ -83,7 +83,7 @@ public class CustomerServiceImpl extends AbstractEntityService implements Custom
     @Autowired
     private TenantService tenantService;
 
-    @PostConstruct
+    //@PostConstruct
     private void loadAppCustomerOnStartup(){
         getAppCustomer();
     };

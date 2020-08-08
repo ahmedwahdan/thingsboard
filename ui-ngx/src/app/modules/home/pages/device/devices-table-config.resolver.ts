@@ -197,7 +197,7 @@ export class DevicesTableConfigResolver implements Resolve<EntityTableConfig<Dev
         {
           name: this.translate.instant('device.assign-to-customer'),
           icon: 'assignment_ind',
-          isEnabled: (entity) => (!entity.customerId || entity.customerId.id === NULL_UUID),
+          isEnabled: (entity) => (!entity.customerId || entity.customerId.id === NULL_UUID || !entity.customerId.ids || entity.customerId.ids.length==0),
           onAction: ($event, entity) => this.assignToCustomer($event, [entity.id])
         },
         {

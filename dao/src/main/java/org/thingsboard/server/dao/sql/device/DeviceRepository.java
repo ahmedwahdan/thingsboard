@@ -34,12 +34,13 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
 
     @Query("SELECT new org.thingsboard.server.dao.model.sql.DeviceInfoEntity(d, c.title, c.additionalInfo) " +
             "FROM DeviceEntity d " +
-            "LEFT JOIN CustomerEntity c on c.id = d.customerId " +
-            "WHERE d.id = :deviceId")
+            "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%')) " +
+            "WHERE d.id = :deviceId "+
+            "group by d.id"   )
     DeviceInfoEntity findDeviceInfoById(@Param("deviceId") String deviceId);
 
     @Query("SELECT d FROM DeviceEntity d WHERE d.tenantId = :tenantId " +
-            "AND d.customerId = :customerId " +
+            "AND d.customerId LIKE CONCAT('%', CONCAT(:customerId, '%')) " +
             "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:searchText, '%'))")
     Page<DeviceEntity> findByTenantIdAndCustomerId(@Param("tenantId") String tenantId,
                                                    @Param("customerId") String customerId,
@@ -48,10 +49,10 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
 
     @Query("SELECT new org.thingsboard.server.dao.model.sql.DeviceInfoEntity(d, c.title, c.additionalInfo) " +
             "FROM DeviceEntity d " +
-            "LEFT JOIN CustomerEntity c on c.id = d.customerId " +
+            "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%')) " +
             "WHERE d.tenantId = :tenantId " +
-            "AND d.customerId = :customerId " +
-            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:searchText, '%'))")
+            "AND d.customerId LIKE CONCAT('%', CONCAT(:customerId, '%')) " +
+            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:searchText, '%')) ")
     Page<DeviceInfoEntity> findDeviceInfosByTenantIdAndCustomerId(@Param("tenantId") String tenantId,
                                                    @Param("customerId") String customerId,
                                                    @Param("searchText") String searchText,
@@ -69,9 +70,9 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
 
     @Query("SELECT new org.thingsboard.server.dao.model.sql.DeviceInfoEntity(d, c.title, c.additionalInfo) " +
             "FROM DeviceEntity d " +
-            "LEFT JOIN CustomerEntity c on c.id = d.customerId " +
+            "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%')) " +
             "WHERE d.tenantId = :tenantId " +
-            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%'))")
+            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%')) ")
     Page<DeviceInfoEntity> findDeviceInfosByTenantId(@Param("tenantId") String tenantId,
                                                      @Param("textSearch") String textSearch,
                                                      Pageable pageable);
@@ -86,17 +87,17 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
 
     @Query("SELECT new org.thingsboard.server.dao.model.sql.DeviceInfoEntity(d, c.title, c.additionalInfo) " +
             "FROM DeviceEntity d " +
-            "LEFT JOIN CustomerEntity c on c.id = d.customerId " +
+            "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%')) " +
             "WHERE d.tenantId = :tenantId " +
             "AND d.type = :type " +
-            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%'))")
+            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%')) ")
     Page<DeviceInfoEntity> findDeviceInfosByTenantIdAndType(@Param("tenantId") String tenantId,
                                              @Param("type") String type,
                                              @Param("textSearch") String textSearch,
                                              Pageable pageable);
 
     @Query("SELECT d FROM DeviceEntity d WHERE d.tenantId = :tenantId " +
-            "AND d.customerId = :customerId " +
+            "AND d.customerId  LIKE CONCAT('%', CONCAT(:customerId, '%')) " +
             "AND d.type = :type " +
             "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%'))")
     Page<DeviceEntity> findByTenantIdAndCustomerIdAndType(@Param("tenantId") String tenantId,
@@ -107,11 +108,11 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
 
     @Query("SELECT new org.thingsboard.server.dao.model.sql.DeviceInfoEntity(d, c.title, c.additionalInfo) " +
             "FROM DeviceEntity d " +
-            "LEFT JOIN CustomerEntity c on c.id = d.customerId " +
+            "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%'))" +
             "WHERE d.tenantId = :tenantId " +
-            "AND d.customerId = :customerId " +
+            "AND d.customerId LIKE CONCAT('%', CONCAT(:customerId, '%')) " +
             "AND d.type = :type " +
-            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%'))")
+            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:textSearch, '%')) ")
     Page<DeviceInfoEntity> findDeviceInfosByTenantIdAndCustomerIdAndType(@Param("tenantId") String tenantId,
                                                           @Param("customerId") String customerId,
                                                           @Param("type") String type,

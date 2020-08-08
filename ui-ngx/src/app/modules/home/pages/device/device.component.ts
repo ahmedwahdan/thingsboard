@@ -63,7 +63,7 @@ export class DeviceComponent extends EntityComponent<DeviceInfo> {
   }
 
   isAssignedToCustomer(entity: DeviceInfo): boolean {
-    return entity && entity.customerId && entity.customerId.id !== NULL_UUID;
+    return entity && entity.customerId && (entity.customerId.id !== NULL_UUID || entity.customerId.ids.length>0);
   }
 
   buildForm(entity: DeviceInfo): FormGroup {

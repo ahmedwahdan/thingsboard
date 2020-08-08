@@ -20,12 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.common.data.DeviceInfo;
 import org.thingsboard.server.common.data.UUIDConverter;
 import org.thingsboard.server.common.data.id.UUIDBased;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.SortOrder;
 import org.thingsboard.server.dao.model.ToData;
+import org.thingsboard.server.dao.model.sql.DeviceInfoEntity;
 
 import java.util.*;
 
@@ -36,6 +39,22 @@ public abstract class DaoUtil {
 
     public static <T> PageData<T> toPageData(Page<? extends ToData<T>> page) {
         List<T> data = convertDataList(page.getContent());
+//        List<DeviceInfoEntity> modifiedData = new ArrayList<>();
+//        if(!data.isEmpty() && data.get(0) instanceof DeviceInfoEntity){
+//            data.stream().forEach(d -> {
+//                DeviceInfoEntity deviceInfoEntity = (DeviceInfoEntity) d;
+//                Optional<DeviceInfoEntity> foundDeviceOptional = modifiedData.stream().filter(m -> m.getId().equals(deviceInfoEntity.getId())).findFirst();
+//                if(foundDeviceOptional.isPresent()){
+//                    DeviceInfoEntity foundDevice = foundDeviceOptional.get();
+//                    foundDevice.setCustomerTitle(foundDevice.getCustomerTitle()+", "+deviceInfoEntity.getCustomerTitle());
+//                }else{
+//                    modifiedData.add(deviceInfoEntity);
+//                }
+//
+//            });
+//            return new PageData(data, page.getTotalPages(), page.getTotalElements(), page.hasNext());
+//
+//        }
         return new PageData(data, page.getTotalPages(), page.getTotalElements(), page.hasNext());
     }
 

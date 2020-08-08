@@ -56,11 +56,7 @@ import org.thingsboard.server.dao.service.PaginatedRemover;
 import org.thingsboard.server.dao.tenant.TenantDao;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -103,6 +99,7 @@ public class DeviceServiceImpl extends AbstractEntityService implements DeviceSe
         log.trace("Executing findDeviceInfoById [{}]", deviceId);
         validateId(deviceId, INCORRECT_DEVICE_ID + deviceId);
         return deviceDao.findDeviceInfoById(tenantId, deviceId.getId());
+
     }
 
     @Override
@@ -167,7 +164,10 @@ public class DeviceServiceImpl extends AbstractEntityService implements DeviceSe
     @Override
     public Device assignDeviceToCustomer(TenantId tenantId, DeviceId deviceId, CustomerId customerId) {
         Device device = findDeviceById(tenantId, deviceId);
-        device.setCustomerId(customerId);
+        if(device.getCustomerId()== null)
+            device.setCustomerId(customerId);
+        UUID id = customerId.getId();
+        device.getCustomerId().getIds().add(id);
         return saveDevice(device);
     }
 
@@ -223,6 +223,16 @@ public class DeviceServiceImpl extends AbstractEntityService implements DeviceSe
         validateId(tenantId, INCORRECT_TENANT_ID + tenantId);
         validatePageLink(pageLink);
         return deviceDao.findDeviceInfosByTenantId(tenantId.getId(), pageLink);
+//        List<DeviceInfo> deviceList = new ArrayList<>();
+//        page.getData().stream().forEach(device ->{
+//            Optional<DeviceInfo> filteredDevice = deviceList.stream().filter(d -> d.getId().equals(device.getId())).findFirst();
+//            if(filteredDevice.isPresent()){
+//                filteredDevice.get().setCustomerTitle(filteredDevice.get().getCustomerTitle()+", "+device.getCustomerTitle());
+//            }else{
+//                deviceList.add(device);
+//            }
+//        });
+//        page.
     }
 
     @Override

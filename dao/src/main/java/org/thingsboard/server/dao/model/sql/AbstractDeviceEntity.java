@@ -25,6 +25,7 @@ import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.id.DeviceId;
 import org.thingsboard.server.common.data.id.TenantId;
+import org.thingsboard.server.common.data.id.UUIDBased;
 import org.thingsboard.server.dao.model.BaseSqlEntity;
 import org.thingsboard.server.dao.model.ModelConstants;
 import org.thingsboard.server.dao.model.SearchTextEntity;
@@ -32,6 +33,13 @@ import org.thingsboard.server.dao.util.mapping.JsonStringType;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.thingsboard.server.dao.model.ModelConstants.NULL_UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -73,6 +81,9 @@ public abstract class AbstractDeviceEntity<T extends Device> extends BaseSqlEnti
             this.tenantId = toString(device.getTenantId().getId());
         }
         if (device.getCustomerId() != null) {
+            if(device.getCustomerId().getIds() != null && !device.getCustomerId().getIds().isEmpty())
+                this.customerId = device.getCustomerId().getIds().stream().map(id -> toString(id)).collect(Collectors.joining(","));
+            else
             this.customerId = toString(device.getCustomerId().getId());
         }
         this.name = device.getName();
@@ -109,7 +120,16 @@ public abstract class AbstractDeviceEntity<T extends Device> extends BaseSqlEnti
             device.setTenantId(new TenantId(toUUID(tenantId)));
         }
         if (customerId != null) {
-            device.setCustomerId(new CustomerId(toUUID(customerId)));
+            CustomerId newCustomerId;
+            if(customerId.contains(",")){
+                List<String> ids = new ArrayList<>(Arrays.asList(customerId.split(",")));
+                newCustomerId = new CustomerId(toUUID(ids.get(0)),ids.stream().map(id -> toUUID(id)).collect(Collectors.toList()));
+            }else{
+                newCustomerId = new CustomerId(toUUID(customerId));
+                if(!toUUID(customerId).equals(NULL_UUID))
+                    newCustomerId.setIds(new ArrayList<>(Arrays.asList(toUUID(customerId))));
+            }
+            device.setCustomerId(newCustomerId);
         }
         device.setName(name);
         device.setType(type);

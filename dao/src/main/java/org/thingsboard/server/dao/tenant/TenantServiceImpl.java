@@ -81,7 +81,6 @@ public class TenantServiceImpl extends AbstractEntityService implements TenantSe
     @Autowired
     private RuleChainService ruleChainService;
 
-    @PostConstruct
     private void loadAppTenantOnStartup(){
         getAppTenant();
     }
