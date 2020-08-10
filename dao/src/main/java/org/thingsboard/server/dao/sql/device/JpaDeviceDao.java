@@ -67,10 +67,7 @@ public class JpaDeviceDao extends JpaAbstractSearchTextDao<DeviceEntity, Device>
 
     @Override
     public DeviceInfo findDeviceInfoById(TenantId tenantId, UUID deviceId) {
-        List<DeviceInfoEntity> deviceInfoList = deviceRepository.findDeviceInfoById(fromTimeUUID(deviceId));
-
-
-        return DaoUtil.getData();
+        return DaoUtil.getData(deviceRepository.findDeviceInfoById(fromTimeUUID(deviceId)));
     }
 
     @Override

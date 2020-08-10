@@ -52,7 +52,8 @@ public interface DeviceRepository extends PagingAndSortingRepository<DeviceEntit
             "LEFT JOIN CustomerEntity c on d.customerId LIKE CONCAT('%', CONCAT(c.id, '%')) " +
             "WHERE d.tenantId = :tenantId " +
             "AND d.customerId LIKE CONCAT('%', CONCAT(:customerId, '%')) " +
-            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:searchText, '%')) ")
+            "AND LOWER(d.searchText) LIKE LOWER(CONCAT(:searchText, '%')) "+
+            "group by d.id"   )
     Page<DeviceInfoEntity> findDeviceInfosByTenantIdAndCustomerId(@Param("tenantId") String tenantId,
                                                    @Param("customerId") String customerId,
                                                    @Param("searchText") String searchText,
